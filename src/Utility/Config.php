@@ -32,9 +32,9 @@ class Config {
 		'roleColumn' => 'role_id', // Foreign key for the Role ID in users table or in pivot table
 		'userColumn' => 'user_id', // Foreign key for the User id in pivot table. Only for multi-roles setup
 		'aliasColumn' => 'alias', // Name of column in roles table holding role alias/slug
-		'rolesTable' => 'Roles', // name of Configure key holding available roles OR class name of roles table
-		'usersTable' => 'Users', // name of the Users table
-		'pivotTable' => null, // Should be used in multi-roles setups
+		'rolesTable' => 'AccessGroups', // name of Configure key holding available roles OR class name of roles table
+		'usersTable' => 'Profiles', // name of the Users table
+		'pivotTable' => 'AccessGroupsProfiles', // Should be used in multi-roles setups
 		'multiRole' => false, // true to enables multirole/HABTM authorization (requires a valid pivot table)
 		'superAdminRole' => null, // id of super admin role, which grants access to ALL resources
 		'superAdmin' => null, // super admin, which grants access to ALL resources
