@@ -502,7 +502,7 @@ trait AclTrait {
 	 */
 	protected function _getUserRoles($user) {
 		// Multi-role from session
-		if (isset($user[$this->getConfig('rolesTable')])) {
+		if (isset($user['active_profile']['access_groups'])) {
 			$userRoles = $user['active_profile']['access_groups'];
 			if (isset($userRoles[0]['id'])) {
 				$userRoles = Hash::extract($userRoles, '{n}.id');
