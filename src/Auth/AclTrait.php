@@ -94,19 +94,6 @@ trait AclTrait {
 			return false;
 		}
 
-		if ($this->getConfig('superAdmin')) {
-			$superAdminColumn = $this->getConfig('superAdminColumn');
-			if (!$superAdminColumn) {
-				$superAdminColumn = $this->getConfig('idColumn');
-			}
-			if (!isset($user[$superAdminColumn])) {
-				throw new Exception('Missing super Admin Column in user table');
-			}
-			if ($user[$superAdminColumn] === $this->getConfig('superAdmin')) {
-				return true;
-			}
-		}
-
 		// Give any logged in user access to ALL actions when `allowLoggedIn` is
 		// enabled except when the `protectedPrefix` is being used.
 		if ($this->getConfig('allowLoggedIn')) {
@@ -514,26 +501,9 @@ trait AclTrait {
 	 * @return int[] List with all role ids belonging to the user
 	 */
 	protected function _getUserRoles($user) {
-		// Single-role from session
-		if (!$this->getConfig('multiRole')) {
-			$roleColumn = $this->getConfig('roleColumn');
-			if (!$roleColumn) {
-				throw new Exception('Invalid TinyAuth config, `roleColumn` config missing.');
-			}
-
-			if (!array_key_exists($roleColumn, $user)) {
-				throw new Exception(sprintf('Missing TinyAuth role id field (%s) in user session', 'Auth.User.' . $this->getConfig('roleColumn')));
-			}
-			if (!isset($user[$this->getConfig('roleColumn')])) {
-				return [];
-			}
-
-			return $this->_mapped([$user[$this->getConfig('roleColumn')]]);
-		}
-
 		// Multi-role from session
 		if (isset($user[$this->getConfig('rolesTable')])) {
-			$userRoles = $user[$this->getConfig('rolesTable')];
+			$userRoles = $user['active_profile']['access_groups'];
 			if (isset($userRoles[0]['id'])) {
 				$userRoles = Hash::extract($userRoles, '{n}.id');
 			}
@@ -550,12 +520,6 @@ trait AclTrait {
 			}
 
 			return $this->_mapped((array)$userRoles);
-		}
-
-		// Multi-role from DB: load the pivot table
-		$roles = $this->_getRolesFromJunction($pivotTableName, $user[$this->getConfig('idColumn')]);
-		if (!$roles) {
-			return [];
 		}
 
 		return $this->_mapped($roles);
