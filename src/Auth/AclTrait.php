@@ -94,6 +94,12 @@ trait AclTrait {
 			return false;
 		}
 
+		if(isset($params['tenant'])) {
+			if(Hash::get($user, 'active_profile.tenant.domain') !== $params['tenant']) {
+				return false;
+			}
+		}
+
 		// Give any logged in user access to ALL actions when `allowLoggedIn` is
 		// enabled except when the `protectedPrefix` is being used.
 		if ($this->getConfig('allowLoggedIn')) {
