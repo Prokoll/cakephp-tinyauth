@@ -94,6 +94,10 @@ trait AclTrait {
 			return false;
 		}
 
+		if($this->getConfig('rolesHolder') !== null) {
+			$user = $user[$this->getConfig('rolesHolder')];
+		}
+
 		if ($this->getConfig('superAdmin')) {
 			$superAdminColumn = $this->getConfig('superAdminColumn');
 			if (!$superAdminColumn) {
