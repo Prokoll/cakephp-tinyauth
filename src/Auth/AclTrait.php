@@ -518,26 +518,9 @@ trait AclTrait {
 	 * @return int[] List with all role ids belonging to the user
 	 */
 	protected function _getUserRoles($user) {
-		// Single-role from session
-		if (!$this->getConfig('multiRole')) {
-			$roleColumn = $this->getConfig('roleColumn');
-			if (!$roleColumn) {
-				throw new Exception('Invalid TinyAuth config, `roleColumn` config missing.');
-			}
-
-			if (!array_key_exists($roleColumn, $user)) {
-				throw new Exception(sprintf('Missing TinyAuth role id field (%s) in user session', 'Auth.User.' . $this->getConfig('roleColumn')));
-			}
-			if (!isset($user[$this->getConfig('roleColumn')])) {
-				return [];
-			}
-
-			return $this->_mapped([$user[$this->getConfig('roleColumn')]]);
-		}
-
 		// Multi-role from session
-		if (isset($user[$this->getConfig('rolesTable')])) {
-			$userRoles = $user[$this->getConfig('rolesTable')];
+		if (isset($user['active_profile']['access_groups'])) {
+			$userRoles = $user['active_profile']['access_groups'];
 			if (isset($userRoles[0]['id'])) {
 				$userRoles = Hash::extract($userRoles, '{n}.id');
 			}
@@ -554,12 +537,6 @@ trait AclTrait {
 			}
 
 			return $this->_mapped((array)$userRoles);
-		}
-
-		// Multi-role from DB: load the pivot table
-		$roles = $this->_getRolesFromJunction($pivotTableName, $user[$this->getConfig('idColumn')]);
-		if (!$roles) {
-			return [];
 		}
 
 		return $this->_mapped($roles);
